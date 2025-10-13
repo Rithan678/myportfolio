@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Cache for LinkedIn data with timestamp
-let linkedinDataCache: any = null;
+let linkedinDataCache: object | null = null;
 let lastFetchTime = 0;
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour in milliseconds
 
@@ -205,7 +205,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
   try {
     // Extract JSON-LD structured data which LinkedIn includes
     const jsonLdMatches = html.match(/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/g);
-    let structuredData: any = null;
+    let structuredData: object | null = null;
     
     if (jsonLdMatches) {
       for (const match of jsonLdMatches) {

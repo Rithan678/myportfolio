@@ -7,7 +7,7 @@ interface LinkedInProfile {
   firstName: string;
   lastName: string;
   headline: string;
-  profilePicture?: any;
+  profilePicture?: string;
   email: string;
   vanityName?: string;
 }
