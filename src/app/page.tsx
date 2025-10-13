@@ -76,6 +76,30 @@ export default function Home() {
   // Use real LinkedIn data or fallback to OAuth data
   const displayData = linkedinData || profileData;
 
+  // Show loading state while data is being fetched
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-xl">Loading portfolio...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if there's a load error
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 text-xl mb-4">Error loading portfolio</p>
+          <p className="text-white">{loadError}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -92,10 +116,10 @@ export default function Home() {
             key={i}
             className="absolute w-2 h-2 bg-white rounded-full opacity-10 animate-float"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${10 + Math.random() * 20}s`
+              left: `${(i * 5) % 100}%`,
+              top: `${(i * 7) % 100}%`,
+              animationDelay: `${i * 0.5}s`,
+              animationDuration: `${10 + (i % 10)}s`
             }}
           ></div>
         ))}
@@ -139,12 +163,12 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-xl font-bold text-white">
-                  {displayData ? `${displayData.firstName[0]}${displayData.lastName[0]}` : 'RD'}
+                  {displayData?.firstName?.[0] || 'R'}{displayData?.lastName?.[0] || 'D'}
                 </span>
               </div>
               <div>
                 <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  {displayData ? `${displayData.firstName} ${displayData.lastName}` : 'Rithan D\'Souza'}
+                  {displayData?.firstName || 'Rithan'} {displayData?.lastName || 'D\'Souza'}
                 </div>
                 <div className="text-sm text-slate-400">
                   {displayData?.headline?.split('|')[0] || 'BCA Student'}
@@ -194,7 +218,7 @@ export default function Home() {
                     />
                   ) : (
                     <span className="text-6xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {displayData ? `${displayData.firstName[0]}${displayData.lastName[0]}` : 'RD'}
+                      {displayData?.firstName?.[0] || 'R'}{displayData?.lastName?.[0] || 'D'}
                     </span>
                   )}
                 </div>
