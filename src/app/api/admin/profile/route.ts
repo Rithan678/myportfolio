@@ -53,6 +53,58 @@ export async function GET() {
   try {
     console.log('🔍 Loading profile data from database...');
     
+    // Check if database is available
+    if (!PortfolioDB.isDatabaseAvailable()) {
+      console.log('⚠️ Database not configured, returning fallback data');
+      return NextResponse.json({
+        firstName: 'Rithan',
+        lastName: "D'Souza",
+        headline: 'BCA Student at St Aloysius College | Student Intern at IQAC Editorial Board',
+        summary: 'Passionate BCA student with expertise in web development, focusing on modern technologies like React, Next.js, and TypeScript. Currently working as a Student Intern at IQAC Editorial Board while pursuing Bachelor\'s in Computer Applications.',
+        location: 'Mangalore, Karnataka, India',
+        profileImage: '/images/rithan-profile.jpg',
+        connections: 150,
+        skills: ['React.js', 'Next.js', 'TypeScript', 'JavaScript', 'Node.js', 'HTML5', 'CSS3', 'Tailwind CSS'],
+        certificates: [
+          {
+            id: '1',
+            name: 'Web Development Foundations',
+            issuer: 'LinkedIn Learning',
+            issueDate: '2024-01-15',
+            expirationDate: null,
+            credentialId: 'WDF2024001',
+            credentialUrl: 'https://linkedin.com/learning/certificates/web-development',
+            description: 'Professional web development certification covering modern technologies.',
+            skills: ['HTML5', 'CSS3', 'JavaScript', 'React']
+          }
+        ],
+        projects: [
+          {
+            id: '1',
+            title: 'Portfolio Website with LinkedIn Integration',
+            description: 'Built a modern portfolio website using Next.js 15, TypeScript, and Tailwind CSS with real-time LinkedIn data integration.',
+            url: 'https://github.com/rithan-dsouza/portfolio',
+            startDate: '2024-10-01',
+            endDate: '2024-10-12',
+            technologies: ['Next.js', 'TypeScript', 'Tailwind CSS', 'LinkedIn API', 'Supabase'],
+            status: 'completed'
+          }
+        ],
+        experience: [
+          {
+            id: '1',
+            title: 'Student Intern',
+            company: 'IQAC Editorial Board',
+            location: 'St Aloysius College, Mangalore',
+            startDate: '2024-01-15',
+            endDate: null,
+            description: 'Contributing to editorial processes and content management for the Internal Quality Assurance Cell.',
+            current: true
+          }
+        ]
+      });
+    }
+    
     const completeProfile = await PortfolioDB.getCompleteProfile();
     
     if (!completeProfile) {

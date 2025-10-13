@@ -1,19 +1,25 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Supabase configuration with fallbacks for development/deployment
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-if (!supabaseUrl) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable');
+// Check if environment variables are properly configured
+const hasSupabaseConfig = 
+  process.env.NEXT_PUBLIC_SUPABASE_URL && 
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+  !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder') &&
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('placeholder');
+
+if (!hasSupabaseConfig) {
+  console.warn('⚠️ Supabase environment variables not configured. Database features will use fallback data.');
 }
 
-if (!supabaseAnonKey) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable');
-}
-
-// Create Supabase client
+// Create Supabase client (will always exist but may not be functional)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Helper to check if Supabase is available
+export const isSupabaseAvailable = () => hasSupabaseConfig;
 
 // Database types
 export interface ProfileData {
@@ -99,8 +105,18 @@ export interface CompleteProfileData {
 export class PortfolioDB {
   private static readonly DEFAULT_USER_ID = 'default_user';
 
+  // Check if database is available
+  static isDatabaseAvailable(): boolean {
+    return Boolean(isSupabaseAvailable());
+  }
+
   // Profile operations
   static async getProfile(userId: string = this.DEFAULT_USER_ID): Promise<ProfileData | null> {
+    if (!this.isDatabaseAvailable()) {
+      console.warn('Database not available, returning null profile');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
