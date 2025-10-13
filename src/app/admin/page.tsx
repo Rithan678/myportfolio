@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { PlusIcon, TrashIcon, PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, TrashIcon, PencilIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 interface Certificate {
   id: string;
@@ -69,7 +69,7 @@ export default function AdminPage() {
   
   const [editingCert, setEditingCert] = useState<string | null>(null);
   const [editingProject, setEditingProject] = useState<string | null>(null);
-  const [editingExperience, setEditingExperience] = useState<string | null>(null);
+  // const [editingExperience, setEditingExperience] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
@@ -133,7 +133,7 @@ export default function AdminPage() {
     setEditingCert(newCert.id);
   };
 
-  const updateCertificate = (id: string, field: string, value: any) => {
+  const updateCertificate = (id: string, field: string, value: string | boolean | string[] | null) => {
     setProfileData(prev => ({
       ...prev,
       certificates: prev.certificates.map(cert =>
@@ -168,7 +168,7 @@ export default function AdminPage() {
     setEditingProject(newProject.id);
   };
 
-  const updateProject = (id: string, field: string, value: any) => {
+  const updateProject = (id: string, field: string, value: string | boolean | string[] | null) => {
     setProfileData(prev => ({
       ...prev,
       projects: prev.projects.map(project =>
@@ -184,40 +184,40 @@ export default function AdminPage() {
     }));
   };
 
-  // Experience functions
-  const addExperience = () => {
-    const newExp: Experience = {
-      id: `temp_${Date.now()}`, // Temporary ID for new experience
-      title: '',
-      company: '',
-      location: '',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: null,
-      description: '',
-      current: true
-    };
-    setProfileData(prev => ({
-      ...prev,
-      experience: [...prev.experience, newExp]
-    }));
-    setEditingExperience(newExp.id);
-  };
+  // Experience functions (commented out for now)
+  // const addExperience = () => {
+  //   const newExp: Experience = {
+  //     id: `temp_${Date.now()}`, // Temporary ID for new experience
+  //     title: '',
+  //     company: '',
+  //     location: '',
+  //     startDate: new Date().toISOString().split('T')[0],
+  //     endDate: null,
+  //     description: '',
+  //     current: true
+  //   };
+  //   setProfileData(prev => ({
+  //     ...prev,
+  //     experience: [...prev.experience, newExp]
+  //   }));
+  //   setEditingExperience(newExp.id);
+  // };
 
-  const updateExperience = (id: string, field: string, value: any) => {
-    setProfileData(prev => ({
-      ...prev,
-      experience: prev.experience.map(exp =>
-        exp.id === id ? { ...exp, [field]: value } : exp
-      )
-    }));
-  };
+  // const updateExperience = (id: string, field: string, value: string | boolean | null) => {
+  //   setProfileData(prev => ({
+  //     ...prev,
+  //     experience: prev.experience.map(exp =>
+  //       exp.id === id ? { ...exp, [field]: value } : exp
+  //     )
+  //   }));
+  // };
 
-  const deleteExperience = (id: string) => {
-    setProfileData(prev => ({
-      ...prev,
-      experience: prev.experience.filter(exp => exp.id !== id)
-    }));
-  };
+  // const deleteExperience = (id: string) => {
+  //   setProfileData(prev => ({
+  //     ...prev,
+  //     experience: prev.experience.filter(exp => exp.id !== id)
+  //   }));
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900">
@@ -462,7 +462,7 @@ export default function AdminPage() {
               {profileData.certificates.length === 0 && (
                 <div className="text-center py-12 text-slate-400">
                   <span className="text-4xl mb-4 block">🏆</span>
-                  <p>No certificates added yet. Click "Add Certificate" to get started.</p>
+                  <p>                  No certificates added yet. Click &quot;Add Certificate&quot; to get started.</p>
                 </div>
               )}
             </div>
@@ -580,7 +580,7 @@ export default function AdminPage() {
               {profileData.projects.length === 0 && (
                 <div className="text-center py-12 text-slate-400">
                   <span className="text-4xl mb-4 block">🚀</span>
-                  <p>No projects added yet. Click "Add Project" to showcase your work.</p>
+                  <p>                  No projects added yet. Click &quot;Add Project&quot; to showcase your work.</p>
                 </div>
               )}
             </div>

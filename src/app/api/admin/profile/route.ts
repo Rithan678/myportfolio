@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PortfolioDB } from '@/lib/supabase';
 
 // Transform database data to admin format
-function transformToAdminFormat(dbData: any) {
+function transformToAdminFormat(dbData: { profile?: { first_name?: string; last_name?: string; headline?: string; summary?: string; location?: string; profile_image?: string; connections?: number }; skills?: { name: string }[]; certificates?: { id: string; name: string; issuer: string; issue_date: string; expiration_date?: string; credential_id?: string; credential_url?: string; description?: string; skills?: string[] }[]; projects?: { id: string; title: string; description?: string; url?: string; start_date?: string; end_date?: string; technologies?: string[]; status: string }[]; experience?: { id: string; title: string; company: string; location?: string; start_date: string; end_date?: string; description?: string; current: boolean }[] } | null) {
   if (!dbData) return null;
 
   return {
@@ -13,8 +13,8 @@ function transformToAdminFormat(dbData: any) {
     location: dbData.profile?.location || 'Mangalore, Karnataka, India',
     profileImage: dbData.profile?.profile_image || '/images/rithan-profile.jpg',
     connections: dbData.profile?.connections || 150,
-    skills: dbData.skills?.map((skill: any) => skill.name) || [],
-    certificates: dbData.certificates?.map((cert: any) => ({
+    skills: dbData.skills?.map((skill: { name: string }) => skill.name) || [],
+    certificates: dbData.certificates?.map((cert: { id: string; name: string; issuer: string; issue_date: string; expiration_date?: string; credential_id?: string; credential_url?: string; description?: string; skills?: string[] }) => ({
       id: cert.id,
       name: cert.name,
       issuer: cert.issuer,
@@ -25,7 +25,7 @@ function transformToAdminFormat(dbData: any) {
       description: cert.description,
       skills: cert.skills || []
     })) || [],
-    projects: dbData.projects?.map((project: any) => ({
+    projects: dbData.projects?.map((project: { id: string; title: string; description?: string; url?: string; start_date?: string; end_date?: string; technologies?: string[]; status: string }) => ({
       id: project.id,
       title: project.title,
       description: project.description,
@@ -35,7 +35,7 @@ function transformToAdminFormat(dbData: any) {
       technologies: project.technologies || [],
       status: project.status
     })) || [],
-    experience: dbData.experience?.map((exp: any) => ({
+    experience: dbData.experience?.map((exp: { id: string; title: string; company: string; location?: string; start_date: string; end_date?: string; description?: string; current: boolean }) => ({
       id: exp.id,
       title: exp.title,
       company: exp.company,
