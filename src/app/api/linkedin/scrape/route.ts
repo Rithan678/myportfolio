@@ -57,7 +57,7 @@ async function fetchRealLinkedInData(linkedinUrl: string) {
           structuredData = data;
           break;
         }
-      } catch (e) {
+      } catch {
         continue;
       }
     }

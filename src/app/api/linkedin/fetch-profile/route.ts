@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
           source: "real_linkedin_api"
         });
       }
-    } catch (error) {
+    } catch {
       console.log("Real LinkedIn API not available, using enhanced mock data");
     }
     

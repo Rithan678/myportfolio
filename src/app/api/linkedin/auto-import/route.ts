@@ -350,7 +350,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
             structuredData = data;
             break;
           }
-        } catch (e) {
+        } catch {
           continue;
         }
       }
@@ -379,7 +379,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
     // Extract certifications, projects, and connections from the profile
     let certifications: RapidAPICertification[] = [];
     let projects: RapidAPIProject[] = [];
-    let connections = { totalConnections: 0 };
+    const connections = { totalConnections: 0 };
     
     // Extract certifications from various LinkedIn patterns
     const certSectionRegex = /"certifications":\s*\[(.*?)\]/;
@@ -398,7 +398,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
           description: cert.description || `Professional certification in ${cert.name || cert.title}`,
           skills: []
         }));
-      } catch (e) {
+      } catch {
         console.log('Could not parse certifications JSON');
       }
     }
@@ -409,7 +409,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
     if (projectSectionMatch) {
       try {
         const projectsData = JSON.parse(`[${projectSectionMatch[1]}]`);
-        projects = projectsData.map((project: any) => ({
+        projects = projectsData.map((project: Record<string, unknown>) => ({
           title: project.title || project.name || 'Professional Project',
           description: project.description || 'Project completed as part of professional development',
           url: project.url || null,
@@ -417,7 +417,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
           endDate: project.timePeriod?.endDate ? `${project.timePeriod.endDate.month}/${project.timePeriod.endDate.year}` : 'Present',
           members: project.members || []
         }));
-      } catch (e) {
+      } catch {
         console.log('Could not parse projects JSON');
       }
     }
@@ -495,7 +495,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
 }
 
 // GET endpoint for automatic data fetching
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const currentTime = Date.now();
     
