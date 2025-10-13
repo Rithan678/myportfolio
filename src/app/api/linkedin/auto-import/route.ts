@@ -92,10 +92,15 @@ interface RapidAPICertification {
   end_date?: string;
   credential_id?: string;
   license_number?: string;
+  licenseNumber?: string;
   credential_url?: string;
   url?: string;
   description?: string;
   skills?: string[];
+  timePeriod?: {
+    startDate?: { month?: number; year?: number };
+    endDate?: { month?: number; year?: number };
+  };
 }
 
 interface RapidAPIProject {
@@ -111,6 +116,10 @@ interface RapidAPIProject {
   date_end?: string;
   members?: string[];
   contributors?: string[];
+  timePeriod?: {
+    startDate?: { month?: number; year?: number };
+    endDate?: { month?: number; year?: number };
+  };
 }
 
 interface RapidAPIData {
@@ -389,14 +398,11 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
         const certsData = JSON.parse(`[${certSectionMatch[1]}]`);
         certifications = certsData.map((cert: RapidAPICertification) => ({
           name: cert.name || cert.title || 'Professional Certification',
-          issuer: cert.authority || cert.issuer || cert.organization || 'LinkedIn Learning',
-          issueDate: cert.timePeriod?.startDate ? `${cert.timePeriod.startDate.month}/${cert.timePeriod.startDate.year}` : new Date().toLocaleDateString(),
-          expirationDate: cert.timePeriod?.endDate ? `${cert.timePeriod.endDate.month}/${cert.timePeriod.endDate.year}` : null,
-          credentialId: cert.licenseNumber || null,
-          credentialUrl: cert.url || null,
-          linkedinUrl: `${linkedinUrl}/details/certifications/`,
-          description: cert.description || `Professional certification in ${cert.name || cert.title}`,
-          skills: []
+          authority: cert.authority || cert.issuer || cert.organization || 'LinkedIn Learning',
+          issue_date: cert.timePeriod?.startDate ? `${cert.timePeriod.startDate.year}-${String(cert.timePeriod.startDate.month || 1).padStart(2, '0')}-01` : new Date().toISOString(),
+          expiration_date: cert.timePeriod?.endDate ? `${cert.timePeriod.endDate.year}-${String(cert.timePeriod.endDate.month || 12).padStart(2, '0')}-01` : undefined,
+          license_number: cert.licenseNumber || cert.license_number || undefined,
+          url: cert.url || cert.credential_url || undefined,
         }));
       } catch {
         console.log('Could not parse certifications JSON');
@@ -410,12 +416,11 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
       try {
         const projectsData = JSON.parse(`[${projectSectionMatch[1]}]`);
         projects = projectsData.map((project: Record<string, unknown>) => ({
-          title: project.title || project.name || 'Professional Project',
-          description: project.description || 'Project completed as part of professional development',
-          url: project.url || null,
-          startDate: project.timePeriod?.startDate ? `${project.timePeriod.startDate.month}/${project.timePeriod.startDate.year}` : null,
-          endDate: project.timePeriod?.endDate ? `${project.timePeriod.endDate.month}/${project.timePeriod.endDate.year}` : 'Present',
-          members: project.members || []
+          title: (project.title as string) || (project.name as string) || 'Professional Project',
+          description: (project.description as string) || 'Project completed as part of professional development',
+          url: (project.url as string) || undefined,
+          start_date: new Date().toISOString(),
+          end_date: undefined,
         }));
       } catch {
         console.log('Could not parse projects JSON');
@@ -439,14 +444,9 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
       certifications = [
         {
           name: 'LinkedIn Learning Certificate',
-          issuer: 'LinkedIn',
-          issueDate: new Date().toLocaleDateString(),
-          expirationDate: null,
-          credentialId: null,
-          credentialUrl: null,
-          linkedinUrl: `${linkedinUrl}/details/certifications/`,
-          description: 'Professional development certification from LinkedIn Learning',
-          skills: []
+          authority: 'LinkedIn',
+          issue_date: new Date().toISOString(),
+          url: undefined,
         }
       ];
     }
@@ -457,10 +457,9 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
         {
           title: 'Portfolio Website Development',
           description: 'Built a modern portfolio website with Next.js and TypeScript',
-          url: null,
-          startDate: new Date().toLocaleDateString(),
-          endDate: 'Present',
-          members: []
+          url: undefined,
+          start_date: new Date().toISOString(),
+          end_date: undefined,
         }
       ];
     }
