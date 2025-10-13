@@ -1,7 +1,141 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Type definitions for external API responses
+interface ProxycurlExperience {
+  title?: string;
+  company?: string;
+  location?: string;
+  starts_at?: { year?: number };
+  ends_at?: { year?: number };
+  description?: string;
+}
+
+interface ProxycurlEducation {
+  degree_name?: string;
+  school?: string;
+  starts_at?: { year?: number };
+  ends_at?: { year?: number };
+  description?: string;
+}
+
+interface ProxycurlCertification {
+  name?: string;
+  authority?: string;
+  license_number?: string;
+  url?: string;
+  starts_at?: { year?: number; month?: number };
+  ends_at?: { year?: number; month?: number };
+  description?: string;
+  skills?: string[];
+}
+
+interface ProxycurlProject {
+  title?: string;
+  description?: string;
+  url?: string;
+  starts_at?: { year?: number; month?: number };
+  ends_at?: { year?: number; month?: number };
+  members?: string[];
+}
+
+interface ProxycurlData {
+  first_name?: string;
+  last_name?: string;
+  headline?: string;
+  summary?: string;
+  city?: string;
+  country?: string;
+  profile_pic_url?: string;
+  experiences?: ProxycurlExperience[];
+  education?: ProxycurlEducation[];
+  certifications?: ProxycurlCertification[];
+  projects?: ProxycurlProject[];
+}
+
+interface RapidAPIExperience {
+  title?: string;
+  position?: string;
+  company?: string;
+  company_name?: string;
+  location?: string;
+  start_date?: string;
+  end_date?: string;
+  duration?: string;
+  description?: string;
+  summary?: string;
+}
+
+interface RapidAPIEducation {
+  degree?: string;
+  field_of_study?: string;
+  school?: string;
+  institution?: string;
+  start_year?: string;
+  end_year?: string;
+  description?: string;
+  activities?: string;
+}
+
+interface RapidAPISkill {
+  name?: string;
+}
+
+interface RapidAPICertification {
+  name?: string;
+  title?: string;
+  issuer?: string;
+  authority?: string;
+  organization?: string;
+  issue_date?: string;
+  start_date?: string;
+  expiration_date?: string;
+  end_date?: string;
+  credential_id?: string;
+  license_number?: string;
+  credential_url?: string;
+  url?: string;
+  description?: string;
+  skills?: string[];
+}
+
+interface RapidAPIProject {
+  title?: string;
+  name?: string;
+  description?: string;
+  summary?: string;
+  url?: string;
+  project_url?: string;
+  start_date?: string;
+  date_start?: string;
+  end_date?: string;
+  date_end?: string;
+  members?: string[];
+  contributors?: string[];
+}
+
+interface RapidAPIData {
+  first_name?: string;
+  last_name?: string;
+  name?: string;
+  headline?: string;
+  title?: string;
+  summary?: string;
+  about?: string;
+  location?: string;
+  profile_pic?: string;
+  profile_picture_url?: string;
+  image_url?: string;
+  connections_count?: number;
+  total_connections?: number;
+  experience?: RapidAPIExperience[];
+  education?: RapidAPIEducation[];
+  skills?: (RapidAPISkill | string)[];
+  certifications?: RapidAPICertification[];
+  projects?: RapidAPIProject[];
+}
+
 // Cache for LinkedIn data with timestamp
-let linkedinDataCache: object | null = null;
+let linkedinDataCache: ProxycurlData | RapidAPIData | null = null;
 let lastFetchTime = 0;
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour in milliseconds
 
@@ -32,21 +166,21 @@ async function scrapeLinkedInProfile(linkedinUrl: string) {
             summary: data.summary,
             location: data.city + ', ' + data.country,
             profileImage: data.profile_pic_url,
-            experience: data.experiences?.map((exp: any) => ({
+            experience: data.experiences?.map((exp: ProxycurlExperience) => ({
               title: exp.title,
               company: exp.company,
               location: exp.location,
               duration: `${exp.starts_at?.year || 'Present'} - ${exp.ends_at?.year || 'Present'}`,
               description: exp.description,
             })) || [],
-            education: data.education?.map((edu: any) => ({
+            education: data.education?.map((edu: ProxycurlEducation) => ({
               degree: edu.degree_name,
               school: edu.school,
               duration: `${edu.starts_at?.year || ''} - ${edu.ends_at?.year || 'Present'}`,
               description: edu.description,
             })) || [],
             skills: data.skills || [],
-            certifications: data.certifications?.map((cert: any) => ({
+            certifications: data.certifications?.map((cert: ProxycurlCertification) => ({
               name: cert.name,
               issuer: cert.authority,
               issueDate: cert.starts_at ? `${cert.starts_at.month}/${cert.starts_at.year}` : 'N/A',
@@ -57,7 +191,7 @@ async function scrapeLinkedInProfile(linkedinUrl: string) {
               description: cert.description || `Professional certification in ${cert.name}`,
               skills: cert.skills || []
             })) || [],
-            projects: data.projects?.map((project: any) => ({
+            projects: data.projects?.map((project: ProxycurlProject) => ({
               title: project.title,
               description: project.description,
               url: project.url,
@@ -147,7 +281,7 @@ async function scrapeLinkedInProfile(linkedinUrl: string) {
 }
 
 // Function to parse RapidAPI LinkedIn data
-function parseRapidAPIData(data: any, linkedinUrl: string) {
+function parseRapidAPIData(data: RapidAPIData, linkedinUrl: string) {
   console.log('🔄 Parsing RapidAPI LinkedIn data...');
   
   return {
@@ -157,21 +291,21 @@ function parseRapidAPIData(data: any, linkedinUrl: string) {
     summary: data.summary || data.about || 'Professional profile data from LinkedIn',
     location: data.location || 'Mangalore, Karnataka, India',
     profileImage: data.profile_picture_url || data.image_url,
-    experience: data.experience?.map((exp: any) => ({
+    experience: data.experience?.map((exp: RapidAPIExperience) => ({
       title: exp.title || exp.position,
       company: exp.company || exp.company_name,
       location: exp.location,
       duration: exp.duration || `${exp.start_date || 'Unknown'} - ${exp.end_date || 'Present'}`,
       description: exp.description || exp.summary,
     })) || [],
-    education: data.education?.map((edu: any) => ({
+    education: data.education?.map((edu: RapidAPIEducation) => ({
       degree: edu.degree || edu.field_of_study,
       school: edu.school || edu.institution,
       duration: `${edu.start_year || ''} - ${edu.end_year || 'Present'}`,
       description: edu.description || edu.activities,
     })) || [],
-    skills: data.skills?.map((skill: any) => skill.name || skill) || [],
-    certifications: data.certifications?.map((cert: any) => ({
+    skills: data.skills?.map((skill: RapidAPISkill | string) => typeof skill === 'string' ? skill : skill.name || '') || [],
+    certifications: data.certifications?.map((cert: RapidAPICertification) => ({
       name: cert.name || cert.title,
       issuer: cert.authority || cert.issuer || cert.organization,
       issueDate: cert.issue_date || cert.start_date || 'N/A',
@@ -182,7 +316,7 @@ function parseRapidAPIData(data: any, linkedinUrl: string) {
       description: cert.description || `Professional certification in ${cert.name || cert.title}`,
       skills: cert.skills || []
     })) || [],
-    projects: data.projects?.map((project: any) => ({
+    projects: data.projects?.map((project: RapidAPIProject) => ({
       title: project.name || project.title,
       description: project.description || project.summary,
       url: project.url || project.project_url,
@@ -205,7 +339,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
   try {
     // Extract JSON-LD structured data which LinkedIn includes
     const jsonLdMatches = html.match(/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/g);
-    let structuredData: object | null = null;
+    let structuredData: { name?: string; jobTitle?: string; description?: string } | null = null;
     
     if (jsonLdMatches) {
       for (const match of jsonLdMatches) {
@@ -243,8 +377,8 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
                    html.match(/"summary":"([^"]+)"/)?.[1] || '';
     
     // Extract certifications, projects, and connections from the profile
-    let certifications: any[] = [];
-    let projects: any[] = [];
+    let certifications: RapidAPICertification[] = [];
+    let projects: RapidAPIProject[] = [];
     let connections = { totalConnections: 0 };
     
     // Extract certifications from various LinkedIn patterns
@@ -253,7 +387,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
     if (certSectionMatch) {
       try {
         const certsData = JSON.parse(`[${certSectionMatch[1]}]`);
-        certifications = certsData.map((cert: any) => ({
+        certifications = certsData.map((cert: RapidAPICertification) => ({
           name: cert.name || cert.title || 'Professional Certification',
           issuer: cert.authority || cert.issuer || cert.organization || 'LinkedIn Learning',
           issueDate: cert.timePeriod?.startDate ? `${cert.timePeriod.startDate.month}/${cert.timePeriod.startDate.year}` : new Date().toLocaleDateString(),

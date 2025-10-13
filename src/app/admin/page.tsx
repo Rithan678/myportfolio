@@ -107,7 +107,7 @@ export default function AdminPage() {
       } else {
         setSaveMessage('❌ Failed to save profile');
       }
-    } catch (error) {
+    } catch {
       setSaveMessage('❌ Error saving profile');
     }
     setIsSaving(false);
