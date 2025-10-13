@@ -18,21 +18,25 @@ export function useLinkedInImport() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check URL parameters for LinkedIn import results
+    // Check URL parameters for LinkedIn import results (only on client-side)
+    if (typeof window === 'undefined') return;
+    
     const urlParams = new URLSearchParams(window.location.search);
     const linkedinImport = urlParams.get('linkedin_import');
     const data = urlParams.get('data');
     const errorParam = urlParams.get('error');
 
-    if (linkedinImport === 'success' && data) {
+    if (linkedinImport === 'success' && data && typeof atob !== 'undefined') {
       try {
         const decodedData = JSON.parse(atob(data));
         setProfileData(decodedData);
         setImportStatus('success');
         
         // Clean up URL
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, '', newUrl);
+        if (typeof window !== 'undefined') {
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, '', newUrl);
+        }
         
         console.log('LinkedIn profile imported:', decodedData);
       } catch (err) {
@@ -51,8 +55,10 @@ export function useLinkedInImport() {
       setImportStatus('error');
       
       // Clean up URL
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+      if (typeof window !== 'undefined') {
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
     }
   }, []);
 
