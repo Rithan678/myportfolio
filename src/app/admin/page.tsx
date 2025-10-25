@@ -462,7 +462,7 @@ export default function AdminPage() {
               {profileData.certificates.length === 0 && (
                 <div className="text-center py-12 text-slate-400">
                   <span className="text-4xl mb-4 block">🏆</span>
-                  <p>                  No certificates added yet. Click &quot;Add Certificate&quot; to get started.</p>
+                  <p>No certificates added yet. Click &quot;Add Certificate&quot; to get started.</p>
                 </div>
               )}
             </div>
@@ -602,7 +602,7 @@ export default function AdminPage() {
               {profileData.experience.length === 0 && (
                 <div className="text-center py-12 text-slate-400">
                   <span className="text-4xl mb-4 block">💼</span>
-                  <p>No work experience added yet. Click "Add Experience" to get started.</p>
+                  <p>No work experience added yet. Click &quot;Add Experience&quot; to get started.</p>
                 </div>
               )}
             </div>
@@ -719,7 +719,7 @@ export default function AdminPage() {
               {profileData.projects.length === 0 && (
                 <div className="text-center py-12 text-slate-400">
                   <span className="text-4xl mb-4 block">🚀</span>
-                  <p>                  No projects added yet. Click &quot;Add Project&quot; to showcase your work.</p>
+                  <p>No projects added yet. Click &quot;Add Project&quot; to showcase your work.</p>
                 </div>
               )}
             </div>

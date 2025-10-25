@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // Type definitions for external API responses
 interface ProxycurlExperience {
@@ -494,7 +494,7 @@ function parseLinkedInHTML(html: string, linkedinUrl: string) {
 }
 
 // GET endpoint for automatic data fetching
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const currentTime = Date.now();
     

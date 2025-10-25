@@ -92,10 +92,9 @@ export default function Home() {
     const loadPortfolioData = async () => {
       try {
         setIsLoading(true);
-        const db = new PortfolioDB();
         
-        if (db.isDatabaseAvailable()) {
-          const profile = await db.getProfile('default_user');
+        if (PortfolioDB.isDatabaseAvailable()) {
+          const profile = await PortfolioDB.getProfile('default_user');
           if (profile) {
             setDisplayData(prev => ({
               ...prev,
